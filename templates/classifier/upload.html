@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MNIST Classifier</title>
+</head>
+<body>
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Log Out</button>
+    </form>
+    
+    <h1>MNIST Digit Classifier</h1>
+
+    <p>Upload a CSV file containing a 28 × 28 handwritten digit image.</p>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Classify Image</button>
+    </form>
+
+    {% if result %}
+        <hr>
+        <h2>Prediction Result</h2>
+
+        <img
+            src="{{ result.image_url }}"
+            alt="Uploaded handwritten digit"
+            width="280"
+            height="280"
+        >
+
+        <p>Predicted digit: {{ result.predicted_digit }}</p>
+        <p>Confidence: {{ result.confidence }}%</p>
+
+        <a href="{% url 'home' %}">Start Over</a>
+    {% endif %}
+
+</body>
+</html>
