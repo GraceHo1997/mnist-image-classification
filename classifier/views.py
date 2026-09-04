@@ -41,3 +41,8 @@ def home(request):
             "result": result,
         },
     )
+
+
+@login_required
+def process_article(request):
+    return render(request, "classifier/article.html")

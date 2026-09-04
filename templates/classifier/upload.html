@@ -1,41 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>MNIST Classifier</title>
-</head>
-<body>
-    <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit">Log Out</button>
-    </form>
-    
-    <h1>MNIST Digit Classifier</h1>
-
-    <p>Upload a CSV file containing a 28 × 28 handwritten digit image.</p>
-
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Classify Image</button>
-    </form>
-
+{% extends "base.html" %}
+{% block title %}Classify a digit | MNIST Lab{% endblock %}
+{% block content %}
+<main id="main-content">
+  <section class="page-head container"><div><p class="eyebrow">Interactive classifier</p><h1>Upload a handwritten digit</h1><p>Provide a headerless 28 × 28 CSV using either the 0–1 or 0–255 pixel scale.</p></div><a href="{% url 'process_article' %}">How the model works →</a></section>
+  <section class="workspace container">
+    <div class="card"><p class="step"><span>1</span> Select input</p>
+      <form method="post" enctype="multipart/form-data" class="stack" novalidate>{% csrf_token %}
+        <label class="drop{% if form.csv_file.errors %} invalid{% endif %}" for="{{ form.csv_file.id_for_label }}">
+          <span class="upload-icon" aria-hidden="true">↑</span><strong>Choose a CSV file</strong><small>28 rows × 28 columns · no header</small><b id="file-name">No file selected</b>{{ form.csv_file }}
+        </label>
+        {% if form.csv_file.errors %}<div class="alert" role="alert"><strong>That file cannot be processed.</strong>{% for error in form.csv_file.errors %}<span>{{ error }}</span>{% endfor %}</div>{% endif %}
+        <div class="checks"><span>✓ Numeric values</span><span>✓ 0–1 or 0–255</span><span>✓ Exactly 784 cells</span></div>
+        <button class="button primary" type="submit">Classify image</button>
+      </form>
+    </div>
     {% if result %}
-        <hr>
-        <h2>Prediction Result</h2>
-
-        <img
-            src="{{ result.image_url }}"
-            alt="Uploaded handwritten digit"
-            width="280"
-            height="280"
-        >
-
-        <p>Predicted digit: {{ result.predicted_digit }}</p>
-        <p>Confidence: {{ result.confidence }}%</p>
-
-        <a href="{% url 'home' %}">Start Over</a>
+    <div class="card result"><div class="result-top"><p class="step"><span>2</span> Model output</p><b class="status">Complete</b></div>
+      <p class="eyebrow">Prediction complete</p><h2>The model reads this as</h2>
+      <div class="prediction"><figure><img src="{{ result.image_url }}" alt="Uploaded handwritten digit rendered from the CSV file"><figcaption>Uploaded 28 × 28 image</figcaption></figure><div><small>Predicted digit</small><strong class="digit">{{ result.predicted_digit }}</strong><small>Confidence</small><strong class="confidence">{{ result.confidence|floatformat:1 }}%</strong><div class="meter"><span style="width:{{ result.confidence }}%"></span></div></div></div>
+      {% if result.probabilities %}<section class="probabilities"><h3>Probability by digit</h3>{% for item in result.probabilities %}<div><span>{{ item.digit }}</span><i><b style="width:{{ item.percentage }}%"></b></i><strong>{{ item.percentage|floatformat:1 }}%</strong></div>{% endfor %}</section>{% endif %}
+      <a class="button secondary" href="{% url 'home' %}">Start over</a>
+    </div>
+    {% else %}
+    <aside class="card empty"><p class="step"><span>2</span> Model output</p><div aria-hidden="true">?</div><h2>Your result will appear here</h2><p>After validation, this panel will show the image, predicted digit, and confidence score.</p></aside>
     {% endif %}
-
-</body>
-</html>
+  </section>
+  <p class="data-note container"><strong>Data handling:</strong> the uploaded CSV is used for this prediction and is not added to the training dataset.</p>
+</main>
+{% endblock %}
+{% block scripts %}<script>const i=document.getElementById('{{ form.csv_file.id_for_label }}'),n=document.getElementById('file-name');if(i&&n)i.addEventListener('change',()=>n.textContent=i.files.length?i.files[0].name:'No file selected');</script>{% endblock %}
