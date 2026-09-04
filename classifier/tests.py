@@ -1,7 +1,10 @@
 from io import BytesIO
 
 import numpy as np
-from django.test import SimpleTestCase
+from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import SimpleTestCase, TestCase
+from django.urls import reverse
 
 from .services import ImageValidationError, process_csv
 
@@ -73,3 +76,84 @@ class ProcessCSVTests(SimpleTestCase):
             "between 0 and 255",
         ):
             process_csv(uploaded_file)
+            
+            
+class ClassifierViewTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="dan",
+            password="Optimization1234",
+        )
+        self.home_url = reverse("home")
+
+    def test_logged_out_user_is_redirected_to_login(self):
+        response = self.client.get(self.home_url)
+
+        self.assertRedirects(
+            response,
+            f"/accounts/login/?next={self.home_url}",
+        )
+
+    def test_logged_in_user_can_open_upload_page(self):
+        self.client.login(
+            username="dan",
+            password="Optimization1234",
+        )
+
+        response = self.client.get(self.home_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "MNIST Digit Classifier")
+
+    def test_valid_csv_can_be_uploaded(self):
+        self.client.login(
+            username="dan",
+            password="Optimization1234",
+        )
+
+        csv_buffer = create_csv_file(np.zeros((28, 28)))
+        uploaded_file = SimpleUploadedFile(
+            "digit.csv",
+            csv_buffer.getvalue(),
+            content_type="text/csv",
+        )
+
+        response = self.client.post(
+            self.home_url,
+            {"csv_file": uploaded_file},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Prediction Result")
+        self.assertContains(response, "Predicted digit: 7")
+
+    def test_non_csv_file_is_rejected(self):
+        self.client.login(
+            username="dan",
+            password="Optimization1234",
+        )
+
+        uploaded_file = SimpleUploadedFile(
+            "digit.txt",
+            b"not a csv file",
+            content_type="text/plain",
+        )
+
+        response = self.client.post(
+            self.home_url,
+            {"csv_file": uploaded_file},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "File extension")
+
+    def test_start_over_returns_clean_form(self):
+        self.client.login(
+            username="dan",
+            password="Optimization1234",
+        )
+
+        response = self.client.get(self.home_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Prediction Result")
