@@ -7,6 +7,7 @@ from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 
 from .services import ImageValidationError, process_csv
+from unittest.mock import patch
 
 
 def create_csv_file(array):
@@ -105,7 +106,17 @@ class ClassifierViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "MNIST Digit Classifier")
 
-    def test_valid_csv_can_be_uploaded(self):
+    @patch("classifier.views.predict_image")
+    def test_valid_csv_can_be_uploaded(self, mock_predict_image):
+        mock_predict_image.return_value = {
+            "predicted_digit": 8,
+            "confidence": 100.0,
+            "probabilities": [
+                {"digit": digit, "probability": 0.0}
+                for digit in range(10)
+            ],
+        }
+
         self.client.login(
             username="dan",
             password="Optimization1234",
@@ -125,7 +136,8 @@ class ClassifierViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Prediction Result")
-        self.assertContains(response, "Predicted digit: 7")
+        self.assertContains(response, "Predicted digit: 8")
+        mock_predict_image.assert_called_once()
 
     def test_non_csv_file_is_rejected(self):
         self.client.login(
