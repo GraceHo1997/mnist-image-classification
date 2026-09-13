@@ -1,0 +1,24 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Authenticated MNIST image-classification demonstration.">
+  <title>{% block title %}MNIST Lab{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'classifier/css/site.css' %}">
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <a class="skip" href="#main-content">Skip to content</a>
+  {% if user.is_authenticated %}
+  <header class="site-header"><div class="container nav">
+    <a class="brand" href="{% url 'home' %}"><span>28</span> MNIST Lab</a>
+    <nav aria-label="Primary"><a href="{% url 'home' %}"{% if request.resolver_match.url_name == 'home' %} aria-current="page"{% endif %}>Classifier</a><a href="{% url 'process_article' %}"{% if request.resolver_match.url_name == 'process_article' %} aria-current="page"{% endif %}>Model process</a></nav>
+    <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="quiet" type="submit">Sign out</button></form>
+  </div></header>
+  {% endif %}
+  {% block content %}{% endblock %}
+  {% if user.is_authenticated %}<footer><div class="container"><span>MNIST Image Classification</span><span>TensorFlow · Django · AWS</span></div></footer>{% endif %}
+  {% block scripts %}{% endblock %}
+</body></html>

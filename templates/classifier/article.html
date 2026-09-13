@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}Model process | MNIST Lab{% endblock %}
+{% block content %}
+<main id="main-content" class="article-page">
+  <header class="article-hero">
+    <div class="container hero-grid">
+      <div>
+        <p class="eyebrow light">Model development report</p>
+        <h1>From 28 × 28 pixels to one predicted digit</h1>
+        <p>Our workflow for designing, validating, and evaluating a convolutional neural network on MNIST.</p>
+        <a class="button light-button" href="{% url 'home' %}">Try the classifier</a>
+      </div>
+      <div class="network" aria-label="Simplified neural-network flow">
+        <span><b>28×28</b>Input</span><i>→</i><span><b>Conv</b>Features</span><i>→</i><span><b>0–9</b>Output</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="article-layout container">
+    <aside class="toc">
+      <strong>On this page</strong>
+      <a href="#objective">Objective</a>
+      <a href="#data">Data</a>
+      <a href="#validation">Validation</a>
+      <a href="#experiments">Experiments</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#performance">Performance</a>
+      <a href="#errors">Error analysis</a>
+      <a href="#limits">Limitations</a>
+    </aside>
+
+    <article class="article-content">
+      <section id="objective">
+        <p class="section-no">01 · Objective</p>
+        <h2>Classifying handwritten digits reliably</h2>
+        <p>The objective is to train a convolutional neural network that exceeds 99% validation accuracy on MNIST, then make its predictions accessible through an authenticated web application.</p>
+        <div class="callout">
+          <strong>Success criteria</strong>
+          <p>Exceed 99% validation accuracy, select the final architecture using validation performance, retrain it on all 60,000 training images, and evaluate it once on the untouched 10,000-image test set.</p>
+        </div>
+      </section>
+
+      <section id="data">
+        <p class="section-no">02 · Dataset and preprocessing</p>
+        <h2>Consistent inputs for training and inference</h2>
+        <p>MNIST contains grayscale images of handwritten digits. The Django application accepts a headerless 28 × 28 CSV with pixel values on either a 0–1 or 0–255 scale. Values are converted to <code>float32</code>; inputs above 1 are divided by 255, then reshaped to <code>(1, 28, 28, 1)</code> before inference.</p>
+        <dl class="facts">
+          <div><dt>Training images</dt><dd>60,000</dd></div>
+          <div><dt>Test images</dt><dd>10,000</dd></div>
+          <div><dt>Input shape</dt><dd>28 × 28 × 1</dd></div>
+          <div><dt>Classes</dt><dd>10 digits</dd></div>
+        </dl>
+      </section>
+
+      <section id="validation">
+        <p class="section-no">03 · Validation approach</p>
+        <h2>Selecting the model before test evaluation</h2>
+        <p>Architecture selection was based on validation performance. The test set was kept separate from model selection and was used only after the final architecture and training settings had been fixed.</p>
+      </section>
+
+      <section id="experiments">
+        <p class="section-no">04 · Experiments</p>
+        <h2>Three candidate models compared</h2>
+        <p>In the finalized recorded validation run, Model 2 achieved the highest validation accuracy and was selected as the final architecture. Model 2 and Model 3 were separated by only 0.0333 percentage points, so the selection reflects the finalized run rather than a claim that Model 2 will outperform Model 3 in every retraining.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Model</th>
+                <th>Parameters</th>
+                <th>Epochs run</th>
+                <th>Best epoch</th>
+                <th>Best validation accuracy</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Model 1</td><td>121,930</td><td>10</td><td>7</td><td>98.8583%</td></tr>
+              <tr><td><strong>Model 2</strong></td><td>468,778</td><td>20</td><td>18</td><td><strong>99.5083%</strong></td></tr>
+              <tr><td>Model 3</td><td>289,066</td><td>14</td><td>9</td><td>99.4750%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="architecture">
+        <p class="section-no">05 · Final architecture</p>
+        <h2>Model 2 selected for deployment</h2>
+        <p>After model selection, the Model 2 architecture was rebuilt with fresh weights and trained on all 60,000 MNIST training images for 18 epochs. The resulting model was saved as <code>mnist_classifier_group5.keras</code> and integrated into the Django backend.</p>
+        <dl class="facts">
+          <div><dt>Selected model</dt><dd>Model 2</dd></div>
+          <div><dt>Parameters</dt><dd>468,778</dd></div>
+          <div><dt>Final training</dt><dd>18 epochs</dd></div>
+          <div><dt>TensorFlow</dt><dd>2.20.0</dd></div>
+        </dl>
+      </section>
+
+      <section id="performance">
+        <p class="section-no">06 · Performance</p>
+        <h2>Validation and final test results</h2>
+        <div class="metrics">
+          <div><span>Best validation accuracy</span><strong>99.5083%</strong></div>
+          <div><span>Final test accuracy</span><strong>99.5700%</strong></div>
+          <div><span>Final training accuracy</span><strong>99.7883%</strong></div>
+          <div><span>Final test loss</span><strong>0.012706</strong></div>
+        </div>
+        <div class="callout">
+          <strong>Saved-model verification</strong>
+          <p>Reloading the saved <code>.keras</code> model reproduced the same 99.5700% test accuracy, confirming that the deployed model artifact was ready for Django integration.</p>
+        </div>
+      </section>
+
+      <section id="errors">
+        <p class="section-no">07 · Error analysis</p>
+        <h2>43 errors across 10,000 test images</h2>
+        <p>The finalized handoff reports 9,957 correct predictions and 43 incorrect predictions on the untouched MNIST test set, corresponding to a 0.43% error rate.</p>
+        <dl class="facts">
+          <div><dt>Correct predictions</dt><dd>9,957</dd></div>
+          <div><dt>Incorrect predictions</dt><dd>43</dd></div>
+          <div><dt>Test accuracy</dt><dd>99.57%</dd></div>
+          <div><dt>Error rate</dt><dd>0.43%</dd></div>
+        </dl>
+      </section>
+
+      <section id="limits">
+        <p class="section-no">08 · Limitations and interpretation</p>
+        <h2>Performance is high, but model ranking is run-specific</h2>
+        <p>The finalized validation run placed Model 2 slightly ahead of Model 3. Because the difference was only 0.0333 percentage points, the comparison should be interpreted as the result of the finalized experiment rather than evidence that Model 2 is universally superior across every retraining run.</p>
+        <p>More broadly, handwritten digits can be visually ambiguous, and 28 × 28 images may lose subtle stroke details. Future work could evaluate repeated training runs, targeted augmentation, calibration, or model ensembles.</p>
+        <a class="button primary" href="{% url 'home' %}">Classify an image</a>
+      </section>
+    </article>
+  </div>
+</main>
+{% endblock %}
