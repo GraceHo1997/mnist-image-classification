@@ -7,7 +7,7 @@ from .services import (
     image_to_data_url,
     process_csv,
 )
-
+from .model_service import predict_image
 
 @login_required
 def home(request):
@@ -22,9 +22,10 @@ def home(request):
                     form.cleaned_data["csv_file"]
                 )
 
+                prediction = predict_image(image_tensor)
+
                 result = {
-                    "predicted_digit": 7,
-                    "confidence": 95.0,
+                    **prediction,
                     "image_url": image_to_data_url(image),
                 }
 
