@@ -2,132 +2,66 @@
 {% block title %}Model process | MNIST Lab{% endblock %}
 {% block content %}
 <main id="main-content" class="article-page">
-  <header class="article-hero">
-    <div class="container hero-grid">
-      <div>
-        <p class="eyebrow light">Model development report</p>
-        <h1>From 28 × 28 pixels to one predicted digit</h1>
-        <p>Our workflow for designing, validating, and evaluating a convolutional neural network on MNIST.</p>
-        <a class="button light-button" href="{% url 'home' %}">Try the classifier</a>
-      </div>
-      <div class="network" aria-label="Simplified neural-network flow">
-        <span><b>28×28</b>Input</span><i>→</i><span><b>Conv</b>Features</span><i>→</i><span><b>0–9</b>Output</span>
-      </div>
-    </div>
-  </header>
-
+  <header class="article-hero"><div class="container hero-grid"><div><p class="eyebrow light">Model development report</p><h1>From 28 × 28 pixels to one predicted digit</h1><p>Our workflow for designing, validating, and evaluating a convolutional neural network on MNIST.</p><a class="button light-button" href="{% url 'home' %}">Try the classifier</a></div><div class="network" aria-label="Simplified neural-network flow"><span><b>28×28</b>Input</span><i>→</i><span><b>Conv</b>Features</span><i>→</i><span><b>0–9</b>Output</span></div></div></header>
   <div class="article-layout container">
-    <aside class="toc">
-      <strong>On this page</strong>
-      <a href="#objective">Objective</a>
-      <a href="#data">Data</a>
-      <a href="#validation">Validation</a>
-      <a href="#experiments">Experiments</a>
-      <a href="#architecture">Architecture</a>
-      <a href="#performance">Performance</a>
-      <a href="#errors">Error analysis</a>
-      <a href="#limits">Limitations</a>
-    </aside>
-
+    <aside class="toc"><strong>On this page</strong><a href="#objective">Objective</a><a href="#data">Data</a><a href="#validation">Validation</a><a href="#experiments">Experiments</a><a href="#architecture">Architecture</a><a href="#performance">Performance</a><a href="#errors">Error analysis</a><a href="#limits">Limitations</a>
+      <a href="#variability">Run variability</a></aside>
     <article class="article-content">
-      <section id="objective">
-        <p class="section-no">01 · Objective</p>
-        <h2>Classifying handwritten digits reliably</h2>
-        <p>The objective is to train a convolutional neural network that exceeds 99% validation accuracy on MNIST, then make its predictions accessible through an authenticated web application.</p>
-        <div class="callout">
-          <strong>Success criteria</strong>
-          <p>Exceed 99% validation accuracy, select the final architecture using validation performance, retrain it on all 60,000 training images, and evaluate it once on the untouched 10,000-image test set.</p>
-        </div>
-      </section>
+      <section id="objective"><p class="section-no">01 · Objective</p><h2>Classifying handwritten digits reliably</h2><p>The objective is to train a convolutional neural network that exceeds 99% validation accuracy on MNIST, then make its predictions accessible through an authenticated web application.</p><div class="callout"><strong>Success criteria</strong><p>Exceed 99% validation accuracy, retrain the selected architecture on all 60,000 training images, and evaluate it once on the untouched test set.</p></div></section>
+      <section id="data"><p class="section-no">02 · Dataset and preprocessing</p><h2>Consistent inputs for training and inference</h2><p>MNIST contains grayscale images of handwritten digits. Each image is represented by 28 rows and 28 columns. Training values are converted to 32-bit floating point numbers, scaled from 0–255 to 0–1, and reshaped to include one image channel.</p><dl class="facts"><div><dt>Training images</dt><dd>60,000</dd></div><div><dt>Test images</dt><dd>10,000</dd></div><div><dt>Input shape</dt><dd>28 × 28 × 1</dd></div><div><dt>Classes</dt><dd>10 digits</dd></div></dl></section>
+      <section id="validation"><p class="section-no">03 · Validation approach</p><h2>Selecting the model without touching the test set</h2><p>During experimentation, 20% of training observations are reserved with <code>validation_split=0.2</code>. Architecture and training decisions use validation performance; the test set remains untouched until the final architecture is fixed and retrained.</p></section>
+      <section id="experiments"><p class="section-no">04 · Experiments</p><h2>What we tested</h2><p class="pending">Final experiment results will be inserted after model selection. No unverified metrics are reported here.</p><div class="table-wrap"><table><thead><tr><th>Run</th><th>Architecture</th><th>Regularization</th><th>Validation</th><th>Finding</th></tr></thead><tbody><tr><td>01</td><td>Pending</td><td>Pending</td><td>Pending</td><td>Pending</td></tr><tr><td>02</td><td>Pending</td><td>Pending</td><td>Pending</td><td>Pending</td></tr><tr><td>03</td><td>Pending</td><td>Pending</td><td>Pending</td><td>Pending</td></tr></tbody></table></div></section>
+      <section id="architecture"><p class="section-no">05 · Final architecture</p><h2>Learning local patterns before classification</h2><p>The candidate network uses stacked small convolutional filters to detect strokes and curves, pooling to reduce spatial dimensions, dropout to control overfitting, and a softmax output for digits 0 through 9.</p><div class="placeholder"><span>Final architecture figure</span><strong>Awaiting verified model output</strong></div></section>
+      <section id="performance"><p class="section-no">06 · Performance</p><h2>Validation and final test results</h2><div class="metrics"><div><span>Best validation accuracy</span><strong>Pending</strong></div><div><span>Final test accuracy</span><strong>Pending</strong></div><div><span>Final test loss</span><strong>Pending</strong></div></div><div class="placeholder"><span>Accuracy and loss curves</span><strong>Awaiting experiment export</strong></div></section>
+      <section id="errors"><p class="section-no">07 · Error analysis</p><h2>Where the model becomes uncertain</h2><p>Analysis will compare true labels, predictions, and confidence, focusing on similar stroke geometry, ambiguous handwriting, unusual centering, and incomplete strokes.</p><div class="placeholder"><span>Confusion matrix and examples</span><strong>Awaiting test-set evaluation</strong></div></section>
+      <section id="limits"><p class="section-no">08 · Limitations and improvements</p><h2>Why 100% accuracy may not be realistic</h2><p>Some handwritten digits are inherently ambiguous. Dataset labeling, limited training variation, and overlap between writing styles constrain generalization. Future work could examine targeted augmentation, calibration, and high-confidence errors.</p><a class="button primary" href="{% url 'home' %}">Classify an image</a></section>
 
-      <section id="data">
-        <p class="section-no">02 · Dataset and preprocessing</p>
-        <h2>Consistent inputs for training and inference</h2>
-        <p>MNIST contains grayscale images of handwritten digits. The Django application accepts a headerless 28 × 28 CSV with pixel values on either a 0–1 or 0–255 scale. Values are converted to <code>float32</code>; inputs above 1 are divided by 255, then reshaped to <code>(1, 28, 28, 1)</code> before inference.</p>
-        <dl class="facts">
-          <div><dt>Training images</dt><dd>60,000</dd></div>
-          <div><dt>Test images</dt><dd>10,000</dd></div>
-          <div><dt>Input shape</dt><dd>28 × 28 × 1</dd></div>
-          <div><dt>Classes</dt><dd>10 digits</dd></div>
-        </dl>
-      </section>
+      <section id="variability">
+        <p class="section-no">09 · Why results can change across runs</p>
+        <h2>Neural-network training is stochastic</h2>
+        <p>Repeated training runs of the same architecture can produce slightly different results. Random weight initialization, training-data shuffling, dropout, data augmentation, and nondeterministic GPU operations can send the optimizer along different training paths.</p>
 
-      <section id="validation">
-        <p class="section-no">03 · Validation approach</p>
-        <h2>Selecting the model before test evaluation</h2>
-        <p>Architecture selection was based on validation performance. The test set was kept separate from model selection and was used only after the final architecture and training settings had been fixed.</p>
-      </section>
+        <p>That variation appeared when Models 2 and 3 were trained again. In the recorded model-selection run, Model 2 achieved 99.5083% validation accuracy and Model 3 achieved 99.4750%. In an independent team rerun, Model 2 achieved 99.4667% while Model 3 achieved 99.5833%.</p>
 
-      <section id="experiments">
-        <p class="section-no">04 · Experiments</p>
-        <h2>Three candidate models compared</h2>
-        <p>In the finalized recorded validation run, Model 2 achieved the highest validation accuracy and was selected as the final architecture. Model 2 and Model 3 were separated by only 0.0333 percentage points, so the selection reflects the finalized run rather than a claim that Model 2 will outperform Model 3 in every retraining.</p>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>Model</th>
-                <th>Parameters</th>
-                <th>Epochs run</th>
-                <th>Best epoch</th>
-                <th>Best validation accuracy</th>
+                <th>Experiment</th>
+                <th>Model 2 validation accuracy</th>
+                <th>Model 3 validation accuracy</th>
+                <th>Higher-accuracy model</th>
               </tr>
             </thead>
             <tbody>
-              <tr><td>Model 1</td><td>121,930</td><td>10</td><td>7</td><td>98.8583%</td></tr>
-              <tr><td><strong>Model 2</strong></td><td>468,778</td><td>20</td><td>18</td><td><strong>99.5083%</strong></td></tr>
-              <tr><td>Model 3</td><td>289,066</td><td>14</td><td>9</td><td>99.4750%</td></tr>
+              <tr>
+                <td>Recorded model-selection run</td>
+                <td>99.5083%</td>
+                <td>99.4750%</td>
+                <td><strong>Model 2</strong></td>
+              </tr>
+              <tr>
+                <td>Independent team rerun</td>
+                <td>99.4667%</td>
+                <td>99.5833%</td>
+                <td><strong>Model 3</strong></td>
+              </tr>
             </tbody>
           </table>
         </div>
-      </section>
 
-      <section id="architecture">
-        <p class="section-no">05 · Final architecture</p>
-        <h2>Model 2 selected for deployment</h2>
-        <p>After model selection, the Model 2 architecture was rebuilt with fresh weights and trained on all 60,000 MNIST training images for 18 epochs. The resulting model was saved as <code>mnist_classifier_group5.keras</code> and integrated into the Django backend.</p>
-        <dl class="facts">
-          <div><dt>Selected model</dt><dd>Model 2</dd></div>
-          <div><dt>Parameters</dt><dd>468,778</dd></div>
-          <div><dt>Final training</dt><dd>18 epochs</dd></div>
-          <div><dt>TensorFlow</dt><dd>2.20.0</dd></div>
-        </dl>
-      </section>
-
-      <section id="performance">
-        <p class="section-no">06 · Performance</p>
-        <h2>Validation and final test results</h2>
-        <div class="metrics">
-          <div><span>Best validation accuracy</span><strong>99.5083%</strong></div>
-          <div><span>Final test accuracy</span><strong>99.5700%</strong></div>
-          <div><span>Final training accuracy</span><strong>99.7883%</strong></div>
-          <div><span>Final test loss</span><strong>0.012706</strong></div>
-        </div>
         <div class="callout">
-          <strong>Saved-model verification</strong>
-          <p>Reloading the saved <code>.keras</code> model reproduced the same 99.5700% test accuracy, confirming that the deployed model artifact was ready for Django integration.</p>
+          <strong>How to interpret the difference</strong>
+          <p>In the recorded selection run, the gap between Models 2 and 3 represented only four of the 12,000 validation images. In the independent rerun, the gap represented about 14 images. These small margins indicate that the two architectures performed very similarly and that their ranking was sensitive to normal training randomness.</p>
         </div>
+
+        <p>Model 2 was kept as the deployed model because it was selected from the original recorded validation results before the test set was examined. It exceeded the 99.5% stretch goal in that run and trained more quickly than Model 3, which required an additional convolutional block and real-time data augmentation. Changing the selected architecture after seeing a later rerun would have changed the original model-selection procedure.</p>
+
+        <p>After selection, Model 2 was rebuilt with fresh weights, trained on all 60,000 training images, and evaluated once on the untouched test set. The saved model achieved 99.57% test accuracy and is the model deployed in the Django application.</p>
+
+        <p>The rerun does not mean that either result was incorrect. It shows why very small accuracy differences from a single training run should be interpreted cautiously. A stronger comparison would repeat each architecture multiple times and compare average performance and variability, although that would require substantially more computation.</p>
       </section>
 
-      <section id="errors">
-        <p class="section-no">07 · Error analysis</p>
-        <h2>43 errors across 10,000 test images</h2>
-        <p>The finalized handoff reports 9,957 correct predictions and 43 incorrect predictions on the untouched MNIST test set, corresponding to a 0.43% error rate.</p>
-        <dl class="facts">
-          <div><dt>Correct predictions</dt><dd>9,957</dd></div>
-          <div><dt>Incorrect predictions</dt><dd>43</dd></div>
-          <div><dt>Test accuracy</dt><dd>99.57%</dd></div>
-          <div><dt>Error rate</dt><dd>0.43%</dd></div>
-        </dl>
-      </section>
-
-      <section id="limits">
-        <p class="section-no">08 · Limitations and interpretation</p>
-        <h2>Performance is high, but model ranking is run-specific</h2>
-        <p>The finalized validation run placed Model 2 slightly ahead of Model 3. Because the difference was only 0.0333 percentage points, the comparison should be interpreted as the result of the finalized experiment rather than evidence that Model 2 is universally superior across every retraining run.</p>
-        <p>More broadly, handwritten digits can be visually ambiguous, and 28 × 28 images may lose subtle stroke details. Future work could evaluate repeated training runs, targeted augmentation, calibration, or model ensembles.</p>
-        <a class="button primary" href="{% url 'home' %}">Classify an image</a>
-      </section>
     </article>
   </div>
 </main>
