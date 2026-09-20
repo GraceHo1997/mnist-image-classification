@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Model process | MNIST Lab{% endblock %}
 
@@ -152,6 +153,17 @@
           or values already scaled between 0 and 1. The application validates
           and normalizes the image before sending it to the trained model.
         </p>
+        <figure style="margin: 2rem 0 2.25rem; text-align: center;">
+          <img
+            src="{% static 'classifier/images/mnist_sample_digits.png' %}"
+            alt="One representative MNIST training image for each digit from 0 through 9"
+            style="display:block; width:100%; max-width:960px; height:auto; margin:0 auto; border-radius:14px;"
+          >
+          <figcaption style="margin-top:0.75rem; color:#6b7280; font-size:0.92rem; line-height:1.5;">
+            <strong>Representative MNIST samples.</strong> One training example is shown for each digit from 0 through 9.
+          </figcaption>
+        </figure>
+
 
       </section>
 
@@ -367,6 +379,17 @@
           The test set therefore remained an independent measure of final
           generalization.
         </p>
+        <figure style="margin: 2rem 0 2.25rem; text-align: center;">
+          <img
+            src="{% static 'classifier/images/model_v2_training_curves_zoomed.png' %}"
+            alt="Model 2 training and validation accuracy and loss from epochs 2 through 20"
+            style="display:block; width:100%; max-width:960px; height:auto; margin:0 auto; border-radius:14px;"
+          >
+          <figcaption style="margin-top:0.75rem; color:#6b7280; font-size:0.92rem; line-height:1.5;">
+            <strong>Model 2 training history.</strong> The zoomed curves show the later-stage training behavior and the recorded best validation epoch at epoch 18.
+          </figcaption>
+        </figure>
+
 
       </section>
 
@@ -496,6 +519,17 @@
           <code>model.evaluate()</code>, confirming that the prediction outputs
           were processed consistently.
         </p>
+        <figure style="margin: 2rem 0 2.25rem; text-align: center;">
+          <img
+            src="{% static 'classifier/images/correctly_classified_examples.png' %}"
+            alt="High-confidence correctly classified MNIST test images for digits 0 through 9"
+            style="display:block; width:100%; max-width:960px; height:auto; margin:0 auto; border-radius:14px;"
+          >
+          <figcaption style="margin-top:0.75rem; color:#6b7280; font-size:0.92rem; line-height:1.5;">
+            <strong>Correct high-confidence predictions.</strong> One representative test image is shown for each digit from 0 through 9.
+          </figcaption>
+        </figure>
+
 
       </section>
 
@@ -512,6 +546,28 @@
           Rather than being completely random, many of the remaining errors were
           concentrated around digits with similar stroke geometry.
         </p>
+        <figure style="margin: 2rem 0 2.25rem; text-align: center;">
+          <img
+            src="{% static 'classifier/images/final_model_confusion_matrix.png' %}"
+            alt="Confusion matrix for the final Model 2 on the MNIST test set"
+            style="display:block; width:100%; max-width:960px; height:auto; margin:0 auto; border-radius:14px;"
+          >
+          <figcaption style="margin-top:0.75rem; color:#6b7280; font-size:0.92rem; line-height:1.5;">
+            <strong>Final-model confusion matrix.</strong> Most predictions lie on the diagonal, consistent with the 99.57% test accuracy; the off-diagonal entries identify the remaining confusion patterns.
+          </figcaption>
+        </figure>
+
+        <figure style="margin: 2rem 0 2.25rem; text-align: center;">
+          <img
+            src="{% static 'classifier/images/misclassified_examples.png' %}"
+            alt="Representative MNIST test images misclassified by the final Model 2"
+            style="display:block; width:100%; max-width:960px; height:auto; margin:0 auto; border-radius:14px;"
+          >
+          <figcaption style="margin-top:0.75rem; color:#6b7280; font-size:0.92rem; line-height:1.5;">
+            <strong>Representative misclassifications.</strong> Each panel shows the true digit, the model's predicted digit, and its confidence in the incorrect prediction.
+          </figcaption>
+        </figure>
+
 
         <div class="table-wrap">
 
